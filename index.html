@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Radio Donald Podcast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap');
+
+        :root {
+            --donald-blue: #1d4ed8;
+            --donald-light-blue: #60a5fa;
+            --donald-yellow: #facc15;
+            --donald-orange: #f97316;
+            --donald-red: #dc2626;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0f9ff;
+            /* We gebruiken nu plaatje.png als standaard achtergrond! */
+            background-image: url('plaatje.png');
+            /* Fallback gradient als het plaatje even niet laadt */
+            background-color: #f0f9ff; 
+            
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            transition: background-image 0.5s ease-in-out;
+            touch-action: manipulation;
+        }
+
+        /* Zorgt dat de tekst altijd leesbaar blijft op drukke achtergronden */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(5px);
+            border: 4px solid #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.1);
+            color: var(--donald-blue);
+        }
+
+        .btn-main {
+            transition: all 0.1s;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+            border-bottom-width: 6px;
+        }
+        .btn-main:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 rgba(0,0,0,0.2);
+            border-bottom-width: 0px;
+            margin-top: 6px; /* Compenseer voor border verlies */
+        }
+
+        .on-air {
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        .settings-panel {
+            transition: transform 0.3s ease-in-out;
+        }
+        .settings-hidden {
+            transform: translateY(-150%);
+        }
+
+        /* Matrozenhoedje shape hint */
+        .sailor-hat {
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen overflow-hidden">
+
+<!-- Settings Panel (Hidden by default) -->
+<div id="settingsPanel" class="fixed top-0 left-0 w-full z-50 p-4 settings-hidden">
+    <div class="bg-white border-4 border-blue-500 rounded-2xl shadow-2xl p-4 max-w-lg mx-auto">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-lg text-blue-600">🎨 Verander de achtergrond</h3>
+            <button onclick="toggleSettings()" class="text-gray-400 hover:text-red-500 text-2xl">
+                <i class="fas fa-times-circle"></i>
+            </button>
+        </div>
+        <p class="text-sm text-gray-600 mb-2">Plak hieronder een link naar een plaatje:</p>
+        <div class="flex space-x-2">
+            <input type="text" id="bgInput" placeholder="https://..." class="flex-1 border-2 border-gray-300 rounded-xl px-3 py-2 text-sm focus:border-blue-500 outline-none">
+            <button onclick="saveBackground()" class="bg-green-500 text-white rounded-xl px-4 py-2 font-bold shadow-md active:scale-95">Oké!</button>
+        </div>
+        <div class="mt-2 flex justify-between">
+             <button onclick="setBackground('https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80')" class="text-xs bg-gray-100 p-2 rounded hover:bg-blue-100">Stripboek</button>
+             <button onclick="setBackground('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80')" class="text-xs bg-gray-100 p-2 rounded hover:bg-blue-100">Eenden</button>
+             <button onclick="resetBackground()" class="text-xs text-red-400 hover:text-red-600">Terug naar 'plaatje.png'</button>
+        </div>
+    </div>
+</div>
+
+<div class="h-full flex flex-col justify-center p-4 max-w-2xl mx-auto relative">
+    
+    <!-- Settings Toggle Button -->
+    <button onclick="toggleSettings()" class="absolute top-4 right-4 bg-white/80 p-3 rounded-full shadow-lg hover:bg-white text-blue-500 transition z-10">
+        <i class="fas fa-cog text-xl"></i>
+    </button>
+
+    <!-- Header -->
+    <header class="text-center mb-4 relative z-10">
+        <div class="inline-block relative">
+            <div class="bg-yellow-400 p-5 rounded-full border-4 border-white shadow-xl mb-2 relative z-10">
+                <i class="fas fa-microphone-alt text-5xl text-red-600 transform -rotate-12"></i>
+            </div>
+            <!-- Decorative hat element -->
+            <div class="absolute -top-4 -right-2 bg-blue-600 w-8 h-8 rounded-full border-2 border-white z-20"></div>
+            <div class="absolute -top-4 -right-2 bg-black w-1 h-6 left-1/2 transform -translate-x-1/2 z-30"></div>
+        </div>
+        <div class="glass-panel inline-block px-6 py-2 rounded-2xl mt-2">
+            <h1 class="text-4xl md:text-5xl uppercase tracking-wider transform -skew-x-6">Radio Donald</h1>
+            <p class="text-blue-400 font-bold text-sm md:text-base">De vrolijkste podcast van Duckstad</p>
+        </div>
+    </header>
+
+    <!-- Status & Visualizer -->
+    <div class="glass-panel rounded-3xl p-6 mb-4 relative overflow-hidden">
+        <div id="statusLabel" class="absolute top-4 right-4 bg-gray-200/80 text-gray-500 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider transition-colors duration-300 backdrop-blur-sm">
+            Stand-by
+        </div>
+        
+        <div class="flex flex-col items-center justify-center h-28 space-y-2">
+            <div id="timer" class="text-6xl font-black text-gray-800 font-mono tracking-tighter" style="text-shadow: 2px 2px 0px rgba(255,255,255,0.5);">00:00</div>
+            <div class="h-8 flex items-center justify-center space-x-2 w-full" id="visualizer">
+                <div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-3 h-3 bg-red-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                <div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <!-- Intro Button -->
+        <button onclick="playIntro()" class="btn-main bg-blue-600 hover:bg-blue-500 border-blue-800 text-white rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-full bg-white opacity-10 transform scale-0 group-hover:scale-150 transition duration-500 rounded-full"></div>
+            <i class="fas fa-music text-3xl mb-1"></i>
+            <span class="font-bold text-lg uppercase">Intro</span>
+            <span class="text-xs opacity-75">Start de show!</span>
+        </button>
+
+        <!-- Jingle Button -->
+        <button onclick="playPageTurn()" class="btn-main bg-yellow-400 hover:bg-yellow-300 border-yellow-600 text-yellow-900 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden">
+            <i class="fas fa-book-open text-3xl mb-1 text-yellow-800"></i>
+            <span class="font-bold text-lg uppercase">Bladzijde</span>
+            <span class="text-xs opacity-75 text-yellow-800">Geluidseffect</span>
+        </button>
+    </div>
+
+    <!-- Recording Control -->
+    <div class="flex justify-center mb-4">
+        <button id="recordBtn" onclick="toggleRecording()" class="btn-main w-full bg-red-500 hover:bg-red-400 border-red-700 text-white rounded-3xl p-5 flex items-center justify-center transform transition shadow-lg">
+            <div class="flex items-center space-x-4">
+                <div class="bg-white/20 p-3 rounded-full animate-pulse">
+                    <i id="recordIcon" class="fas fa-circle text-2xl"></i>
+                </div>
+                <span id="recordText" class="text-2xl font-black uppercase tracking-wide">Start Opname</span>
+            </div>
+        </button>
+    </div>
+
+    <!-- Download Area (Hidden by default) -->
+    <div id="downloadArea" class="hidden animate-fade-in">
+        <div class="glass-panel border-green-400 bg-green-50/90 rounded-2xl p-4 flex items-center justify-between shadow-lg">
+            <div class="flex items-center space-x-3">
+                <div class="bg-green-500 text-white p-3 rounded-full shadow-md">
+                    <i class="fas fa-check text-xl"></i>
+                </div>
+                <div>
+                    <p class="font-bold text-green-800 text-lg">Gelukt!</p>
+                    <p class="text-xs text-green-600 font-semibold">Jouw podcast is klaar.</p>
+                </div>
+            </div>
+            <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transform active:scale-95 transition flex items-center">
+                <i class="fas fa-download mr-2"></i> Opslaan
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- Settings & Background Logic ---
+    function toggleSettings() {
+        const panel = document.getElementById('settingsPanel');
+        panel.classList.toggle('settings-hidden');
+    }
+
+    function saveBackground() {
+        const url = document.getElementById('bgInput').value;
+        if (url) {
+            setBackground(url);
+        }
+        toggleSettings();
+    }
+
+    function setBackground(url) {
+        document.body.style.backgroundImage = `url('${url}')`;
+        // Save to local storage so it remembers next time
+        localStorage.setItem('radioDonaldBg', url);
+    }
+
+    function resetBackground() {
+        // Reset naar de standaard CSS (wat nu plaatje.png is)
+        document.body.style.backgroundImage = '';
+        localStorage.removeItem('radioDonaldBg');
+        toggleSettings();
+    }
+
+    // Load saved background on start
+    const savedBg = localStorage.getItem('radioDonaldBg');
+    if (savedBg) {
+        document.body.style.backgroundImage = `url('${savedBg}')`;
+    }
+
+    // --- Audio Logic (Same as before but refined) ---
+    let audioCtx;
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+    let startTime;
+    let timerInterval;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function playIntro() {
+        // We proberen nu het bestand 'intro.mp3' af te spelen
+        // Zorg dat dit bestand in dezelfde map staat als dit HTML bestand!
+        const audio = new Audio('intro.mp3');
+        
+        // Als het bestand niet bestaat of niet wil afspelen (foutmelding), 
+        // gebruiken we de oude 'playSynthIntro' functie als reserve.
+        audio.play().catch(error => {
+            console.log("intro.mp3 niet gevonden of fout bij afspelen, we gebruiken de synthesizer back-up");
+            playSynthIntro();
+        });
+    }
+
+    // Dit is het synthesizer deuntje (voorheen intro, nu voor bladzijde)
+    function playSynthIntro() {
+        initAudio();
+        const now = audioCtx.currentTime;
+        // Happy C Major scale up and down
+        const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 523.25];
+        const times = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.2];
+        const lengths = [0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.3, 0.5];
+
+        notes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.type = i % 2 === 0 ? 'sine' : 'triangle'; 
+            osc.frequency.value = freq;
+            
+            gainNode.gain.setValueAtTime(0.2, now + times[i]);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + times[i] + lengths[i]);
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            osc.start(now + times[i]);
+            osc.stop(now + times[i] + lengths[i]);
+        });
+    }
+
+    function playPageTurn() {
+        // Speelt nu het 'andere deuntje' (de synthesizer muziek)
+        playSynthIntro();
+    }
+
+    async function toggleRecording() {
+        initAudio();
+        const btn = document.getElementById('recordBtn');
+        const icon = document.getElementById('recordIcon');
+        const text = document.getElementById('recordText');
+        const status = document.getElementById('statusLabel');
+        const downloadArea = document.getElementById('downloadArea');
+
+        if (!isRecording) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                let mimeType = 'audio/webm';
+                if (!MediaRecorder.isTypeSupported(mimeType)) {
+                    mimeType = 'audio/mp4'; 
+                    if(!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
+                }
+
+                mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: mimeType || 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    const link = document.getElementById('downloadLink');
+                    link.href = audioUrl;
+                    const date = new Date();
+                    link.download = `RadioDonald_${date.getDate()}-${date.getMonth()+1}_${date.getHours()}u${date.getMinutes()}.webm`;
+
+                    downloadArea.classList.remove('hidden');
+                };
+
+                mediaRecorder.start();
+                
+                isRecording = true;
+                btn.classList.remove('bg-red-500', 'hover:bg-red-400', 'border-red-700');
+                btn.classList.add('bg-gray-800', 'hover:bg-gray-700', 'border-gray-900');
+                icon.classList.remove('fa-circle');
+                icon.classList.add('fa-square', 'text-red-500');
+                text.innerText = "Stop!";
+                
+                status.innerText = "ON AIR";
+                status.classList.remove('bg-gray-200/80', 'text-gray-500');
+                status.classList.add('bg-red-600', 'text-white', 'on-air');
+                
+                downloadArea.classList.add('hidden');
+                startTimer();
+
+            } catch (err) {
+                console.error(err);
+                alert("Geef toestemming voor de microfoon om op te nemen! 🎙️");
+            }
+        } else {
+            mediaRecorder.stop();
+            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+
+            isRecording = false;
+            btn.classList.add('bg-red-500', 'hover:bg-red-400', 'border-red-700');
+            btn.classList.remove('bg-gray-800', 'hover:bg-gray-700', 'border-gray-900');
+            icon.classList.add('fa-circle');
+            icon.classList.remove('fa-square', 'text-red-500');
+            text.innerText = "Opnemen";
+
+            status.innerText = "Klaar";
+            status.classList.add('bg-gray-200/80', 'text-gray-500');
+            status.classList.remove('bg-red-600', 'text-white', 'on-air');
+
+            stopTimer();
+        }
+    }
+
+    function startTimer() {
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+            const delta = Date.now() - startTime;
+            const seconds = Math.floor((delta / 1000) % 60);
+            const minutes = Math.floor((delta / (1000 * 60)) % 60);
+            document.getElementById('timer').innerText = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+        
+        document.querySelectorAll('#visualizer div').forEach(div => div.style.animationDuration = '0.5s');
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        document.querySelectorAll('#visualizer div').forEach(div => div.style.animationDuration = '0s');
+    }
+</script>
+</body>
+</html>
