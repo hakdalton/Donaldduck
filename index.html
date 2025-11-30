@@ -68,8 +68,12 @@
         /* Simpele styling voor de audio speler */
         audio {
             width: 100%;
-            height: 40px;
-            border-radius: 20px;
+            height: 60px; /* Groter gemaakt */
+            border-radius: 30px;
+        }
+        /* Probeert de controls groter te maken op webkit browsers (iPad) */
+        audio::-webkit-media-controls-panel {
+            transform: scale(1.0); /* Kan aangepast worden indien nodig, maar hoogte helpt vaak al */
         }
     </style>
 </head>
@@ -133,27 +137,28 @@
     </div>
 
     <!-- Download & Preview & Reset Area -->
-    <div id="downloadArea" class="hidden animate-fade-in flex flex-col space-y-4">
+    <div id="downloadArea" class="hidden animate-fade-in flex flex-col space-y-6">
         
         <!-- Stap 1: Luisteren -->
-        <div class="bg-white p-5 rounded-2xl border-4 border-blue-200 shadow-sm relative mt-2">
-             <div class="absolute -top-4 left-4 bg-blue-500 text-white text-sm font-bold px-3 py-1 rounded-full uppercase shadow-sm">Stap 1: Luisteren</div>
-             <p class="text-blue-800 font-bold mb-2 mt-1">Hoe klinkt het?</p>
-             <audio id="audioPreview" controls class="w-full outline-none h-12"></audio>
+        <div class="bg-white p-6 rounded-3xl border-4 border-blue-200 shadow-lg relative mt-4">
+             <div class="absolute -top-5 left-4 bg-blue-500 text-white text-lg font-bold px-4 py-1 rounded-full uppercase shadow-md">Stap 1: Luisteren</div>
+             <p class="text-blue-800 font-bold mb-3 mt-2 text-xl">Hoe klinkt het?</p>
+             <!-- Extra hoogte voor de speler -->
+             <audio id="audioPreview" controls class="w-full outline-none h-16"></audio>
         </div>
 
         <!-- Stap 2: Actie Knoppen -->
-        <div class="grid grid-cols-1 gap-3 relative pt-2">
-            <div class="absolute -top-2 left-4 bg-green-500 text-white text-sm font-bold px-3 py-1 rounded-full uppercase shadow-sm z-10">Stap 2: Kiezen</div>
+        <div class="grid grid-cols-1 gap-4 relative pt-4">
+            <div class="absolute -top-2 left-4 bg-green-500 text-white text-lg font-bold px-4 py-1 rounded-full uppercase shadow-md z-10">Stap 2: Kiezen</div>
             
-            <!-- Save Button -->
-            <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-5 px-6 rounded-2xl shadow-[0_6px_0_rgba(21,128,61,0.5)] active:shadow-none active:translate-y-1 transition flex items-center justify-center text-xl mt-2">
-                <i class="fas fa-thumbs-up mr-3 text-3xl"></i> Goed? Opslaan!
+            <!-- Save Button (Extra Groot) -->
+            <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-8 px-6 rounded-3xl shadow-[0_8px_0_rgba(21,128,61,0.5)] active:shadow-none active:translate-y-2 transition flex items-center justify-center text-3xl mt-2 border-4 border-green-400">
+                <i class="fas fa-thumbs-up mr-4 text-5xl"></i> Goed? Opslaan!
             </a>
 
-            <!-- Reset Button -->
-            <button onclick="resetApp()" class="bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-4 px-6 rounded-2xl border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition flex items-center justify-center text-lg">
-                <i class="fas fa-trash-alt mr-2"></i> Nee, opnieuw!
+            <!-- Reset Button (Groot) -->
+            <button onclick="resetApp()" class="bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-6 px-6 rounded-3xl border-b-8 border-gray-300 active:border-b-0 active:translate-y-2 transition flex items-center justify-center text-2xl">
+                <i class="fas fa-trash-alt mr-3 text-3xl"></i> Nee, opnieuw!
             </button>
         </div>
     </div>
