@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Zorgt ervoor dat de app mooi opent op iPad zonder browserbalken -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Radio Donald">
+
+    <!-- Icoontjes voor iPad scherm en browser tabblad (lokaal bestand: duck.png) -->
+    <link rel="apple-touch-icon" href="duck.png">
+    <link rel="icon" type="image/png" href="duck.png">
+
     <title>Radio Donald Podcast</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -16,6 +26,8 @@
             background-size: 60px 60px;
             background-position: 0 0, 30px 30px;
             touch-action: manipulation; /* Voorkomt zoomen op iPad */
+            /* Zorgt dat je niet per ongeluk naar beneden trekt om te verversen op iPad (in standalone modus) */
+            overscroll-behavior-y: none; 
         }
 
         h1 {
