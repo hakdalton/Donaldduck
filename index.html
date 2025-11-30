@@ -9,54 +9,27 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap');
 
-        :root {
-            --donald-blue: #1d4ed8;
-            --donald-light-blue: #60a5fa;
-            --donald-yellow: #facc15;
-            --donald-orange: #f97316;
-            --donald-red: #dc2626;
-        }
-
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #f0f9ff;
-            /* We gebruiken nu plaatje.png als standaard achtergrond! */
-            background-image: url('plaatje.png');
-            /* Fallback gradient als het plaatje even niet laadt */
-            background-color: #f0f9ff; 
-            
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            transition: background-image 0.5s ease-in-out;
-            touch-action: manipulation;
-        }
-
-        /* Zorgt dat de tekst altijd leesbaar blijft op drukke achtergronden */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(5px);
-            border: 4px solid #fff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background-color: #f0f9ff; /* Luchtblauw */
+            background-image: radial-gradient(#bae6fd 15%, transparent 16%), radial-gradient(#bae6fd 15%, transparent 16%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            touch-action: manipulation; /* Voorkomt zoomen op iPad */
         }
 
         h1 {
             font-family: 'Fredoka One', cursive;
             text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.1);
-            color: var(--donald-blue);
         }
 
         .btn-main {
             transition: all 0.1s;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
-            border-bottom-width: 6px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
         }
         .btn-main:active {
             transform: translateY(6px);
             box-shadow: 0 0px 0 rgba(0,0,0,0.2);
-            border-bottom-width: 0px;
-            margin-top: 6px; /* Compenseer voor border verlies */
         }
 
         .on-air {
@@ -64,111 +37,66 @@
         }
 
         @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        .settings-panel {
-            transition: transform 0.3s ease-in-out;
-        }
-        .settings-hidden {
-            transform: translateY(-150%);
-        }
-
-        /* Matrozenhoedje shape hint */
-        .sailor-hat {
-            clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+        .ipad-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
     </style>
 </head>
-<body class="text-gray-800 h-screen overflow-hidden">
+<body class="text-gray-800">
 
-<!-- Settings Panel (Hidden by default) -->
-<div id="settingsPanel" class="fixed top-0 left-0 w-full z-50 p-4 settings-hidden">
-    <div class="bg-white border-4 border-blue-500 rounded-2xl shadow-2xl p-4 max-w-lg mx-auto">
-        <div class="flex justify-between items-center mb-2">
-            <h3 class="font-bold text-lg text-blue-600">🎨 Verander de achtergrond</h3>
-            <button onclick="toggleSettings()" class="text-gray-400 hover:text-red-500 text-2xl">
-                <i class="fas fa-times-circle"></i>
-            </button>
-        </div>
-        <p class="text-sm text-gray-600 mb-2">Plak hieronder een link naar een plaatje:</p>
-        <div class="flex space-x-2">
-            <input type="text" id="bgInput" placeholder="https://..." class="flex-1 border-2 border-gray-300 rounded-xl px-3 py-2 text-sm focus:border-blue-500 outline-none">
-            <button onclick="saveBackground()" class="bg-green-500 text-white rounded-xl px-4 py-2 font-bold shadow-md active:scale-95">Oké!</button>
-        </div>
-        <div class="mt-2 flex justify-between">
-             <button onclick="setBackground('https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80')" class="text-xs bg-gray-100 p-2 rounded hover:bg-blue-100">Stripboek</button>
-             <button onclick="setBackground('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80')" class="text-xs bg-gray-100 p-2 rounded hover:bg-blue-100">Eenden</button>
-             <button onclick="resetBackground()" class="text-xs text-red-400 hover:text-red-600">Terug naar 'plaatje.png'</button>
-        </div>
-    </div>
-</div>
-
-<div class="h-full flex flex-col justify-center p-4 max-w-2xl mx-auto relative">
+<div class="ipad-container p-4 max-w-2xl mx-auto">
     
-    <!-- Settings Toggle Button -->
-    <button onclick="toggleSettings()" class="absolute top-4 right-4 bg-white/80 p-3 rounded-full shadow-lg hover:bg-white text-blue-500 transition z-10">
-        <i class="fas fa-cog text-xl"></i>
-    </button>
-
     <!-- Header -->
-    <header class="text-center mb-4 relative z-10">
-        <div class="inline-block relative">
-            <div class="bg-yellow-400 p-5 rounded-full border-4 border-white shadow-xl mb-2 relative z-10">
-                <i class="fas fa-microphone-alt text-5xl text-red-600 transform -rotate-12"></i>
-            </div>
-            <!-- Decorative hat element -->
-            <div class="absolute -top-4 -right-2 bg-blue-600 w-8 h-8 rounded-full border-2 border-white z-20"></div>
-            <div class="absolute -top-4 -right-2 bg-black w-1 h-6 left-1/2 transform -translate-x-1/2 z-30"></div>
+    <header class="text-center mb-6">
+        <div class="inline-block bg-yellow-400 p-4 rounded-full border-4 border-white shadow-lg mb-2">
+            <i class="fas fa-microphone-alt text-4xl text-orange-600"></i>
         </div>
-        <div class="glass-panel inline-block px-6 py-2 rounded-2xl mt-2">
-            <h1 class="text-4xl md:text-5xl uppercase tracking-wider transform -skew-x-6">Radio Donald</h1>
-            <p class="text-blue-400 font-bold text-sm md:text-base">De vrolijkste podcast van Duckstad</p>
-        </div>
+        <h1 class="text-4xl text-blue-600 mb-1">Radio Donald</h1>
+        <p class="text-blue-400 font-bold">De Podcast Maker</p>
     </header>
 
     <!-- Status & Visualizer -->
-    <div class="glass-panel rounded-3xl p-6 mb-4 relative overflow-hidden">
-        <div id="statusLabel" class="absolute top-4 right-4 bg-gray-200/80 text-gray-500 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider transition-colors duration-300 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-gray-200 mb-6 relative overflow-hidden">
+        <div id="statusLabel" class="absolute top-4 right-4 bg-gray-200 text-gray-500 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider transition-colors duration-300">
             Stand-by
         </div>
         
-        <div class="flex flex-col items-center justify-center h-28 space-y-2">
-            <div id="timer" class="text-6xl font-black text-gray-800 font-mono tracking-tighter" style="text-shadow: 2px 2px 0px rgba(255,255,255,0.5);">00:00</div>
-            <div class="h-8 flex items-center justify-center space-x-2 w-full" id="visualizer">
-                <div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
-                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-3 h-3 bg-red-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+        <div class="flex flex-col items-center justify-center h-32 space-y-2">
+            <div id="timer" class="text-5xl font-black text-gray-700 font-mono">00:00</div>
+            <div class="h-8 flex items-center justify-center space-x-1 w-full" id="visualizer">
+                <div class="w-2 h-2 bg-blue-200 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-blue-300 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
             </div>
         </div>
     </div>
 
     <!-- Controls -->
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        <!-- Intro Button -->
-        <button onclick="playIntro()" class="btn-main bg-blue-600 hover:bg-blue-500 border-blue-800 text-white rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-full h-full bg-white opacity-10 transform scale-0 group-hover:scale-150 transition duration-500 rounded-full"></div>
-            <i class="fas fa-music text-3xl mb-1"></i>
-            <span class="font-bold text-lg uppercase">Intro</span>
-            <span class="text-xs opacity-75">Start de show!</span>
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <button onclick="playIntro()" class="btn-main bg-blue-500 hover:bg-blue-600 text-white rounded-2xl p-6 flex flex-col items-center justify-center border-b-8 border-blue-700">
+            <i class="fas fa-music text-3xl mb-2"></i>
+            <span class="font-bold text-lg">Intro Muziek</span>
         </button>
 
-        <!-- Jingle Button -->
-        <button onclick="playPageTurn()" class="btn-main bg-yellow-400 hover:bg-yellow-300 border-yellow-600 text-yellow-900 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden">
-            <i class="fas fa-book-open text-3xl mb-1 text-yellow-800"></i>
-            <span class="font-bold text-lg uppercase">Bladzijde</span>
-            <span class="text-xs opacity-75 text-yellow-800">Geluidseffect</span>
+        <button onclick="playPageTurn()" class="btn-main bg-orange-400 hover:bg-orange-500 text-white rounded-2xl p-6 flex flex-col items-center justify-center border-b-8 border-orange-600">
+            <i class="fas fa-book-open text-3xl mb-2"></i>
+            <span class="font-bold text-lg">Bladzijde</span>
         </button>
     </div>
 
     <!-- Recording Control -->
-    <div class="flex justify-center mb-4">
-        <button id="recordBtn" onclick="toggleRecording()" class="btn-main w-full bg-red-500 hover:bg-red-400 border-red-700 text-white rounded-3xl p-5 flex items-center justify-center transform transition shadow-lg">
+    <div class="flex justify-center mb-6">
+        <button id="recordBtn" onclick="toggleRecording()" class="btn-main w-full bg-red-500 hover:bg-red-600 text-white rounded-3xl p-6 flex items-center justify-center border-b-8 border-red-700 transform transition">
             <div class="flex items-center space-x-4">
-                <div class="bg-white/20 p-3 rounded-full animate-pulse">
+                <div class="bg-white/20 p-3 rounded-full">
                     <i id="recordIcon" class="fas fa-circle text-2xl"></i>
                 </div>
                 <span id="recordText" class="text-2xl font-black uppercase tracking-wide">Start Opname</span>
@@ -176,20 +104,24 @@
         </button>
     </div>
 
-    <!-- Download Area (Hidden by default) -->
+    <!-- Download Area -->
+    <div id="processingArea" class="hidden text-center p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-200 mb-4 animate-pulse">
+        <p class="text-yellow-700 font-bold"><i class="fas fa-cog fa-spin mr-2"></i>Even geduld, audio omzetten...</p>
+    </div>
+
     <div id="downloadArea" class="hidden animate-fade-in">
-        <div class="glass-panel border-green-400 bg-green-50/90 rounded-2xl p-4 flex items-center justify-between shadow-lg">
+        <div class="bg-green-100 border-2 border-green-400 rounded-2xl p-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="bg-green-500 text-white p-3 rounded-full shadow-md">
-                    <i class="fas fa-check text-xl"></i>
+                <div class="bg-green-500 text-white p-2 rounded-full">
+                    <i class="fas fa-file-audio"></i>
                 </div>
                 <div>
-                    <p class="font-bold text-green-800 text-lg">Gelukt!</p>
-                    <p class="text-xs text-green-600 font-semibold">Jouw podcast is klaar.</p>
+                    <p class="font-bold text-green-800">Klaar!</p>
+                    <p class="text-xs text-green-600">Hoge kwaliteit (.WAV)</p>
                 </div>
             </div>
-            <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transform active:scale-95 transition flex items-center">
-                <i class="fas fa-download mr-2"></i> Opslaan
+            <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-xl shadow-md transform active:scale-95 transition flex items-center">
+                <i class="fas fa-download mr-2"></i> Download
             </a>
         </div>
     </div>
@@ -197,40 +129,6 @@
 </div>
 
 <script>
-    // --- Settings & Background Logic ---
-    function toggleSettings() {
-        const panel = document.getElementById('settingsPanel');
-        panel.classList.toggle('settings-hidden');
-    }
-
-    function saveBackground() {
-        const url = document.getElementById('bgInput').value;
-        if (url) {
-            setBackground(url);
-        }
-        toggleSettings();
-    }
-
-    function setBackground(url) {
-        document.body.style.backgroundImage = `url('${url}')`;
-        // Save to local storage so it remembers next time
-        localStorage.setItem('radioDonaldBg', url);
-    }
-
-    function resetBackground() {
-        // Reset naar de standaard CSS (wat nu plaatje.png is)
-        document.body.style.backgroundImage = '';
-        localStorage.removeItem('radioDonaldBg');
-        toggleSettings();
-    }
-
-    // Load saved background on start
-    const savedBg = localStorage.getItem('radioDonaldBg');
-    if (savedBg) {
-        document.body.style.backgroundImage = `url('${savedBg}')`;
-    }
-
-    // --- Audio Logic (Same as before but refined) ---
     let audioCtx;
     let mediaRecorder;
     let audioChunks = [];
@@ -247,50 +145,52 @@
         }
     }
 
+    // --- Sound Effects ---
     function playIntro() {
-        // We proberen nu het bestand 'intro.mp3' af te spelen
-        // Zorg dat dit bestand in dezelfde map staat als dit HTML bestand!
-        const audio = new Audio('intro.mp3');
-        
-        // Als het bestand niet bestaat of niet wil afspelen (foutmelding), 
-        // gebruiken we de oude 'playSynthIntro' functie als reserve.
-        audio.play().catch(error => {
-            console.log("intro.mp3 niet gevonden of fout bij afspelen, we gebruiken de synthesizer back-up");
-            playSynthIntro();
-        });
-    }
-
-    // Dit is het synthesizer deuntje (voorheen intro, nu voor bladzijde)
-    function playSynthIntro() {
         initAudio();
         const now = audioCtx.currentTime;
-        // Happy C Major scale up and down
-        const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 523.25];
-        const times = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.2];
-        const lengths = [0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.3, 0.5];
+        const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63];
+        const times = [0, 0.2, 0.4, 0.6, 0.9, 1.1, 1.4];
+        const lengths = [0.2, 0.2, 0.2, 0.3, 0.2, 0.2, 0.4];
 
         notes.forEach((freq, i) => {
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-            
-            osc.type = i % 2 === 0 ? 'sine' : 'triangle'; 
+            osc.type = i === 3 ? 'square' : 'sine';
             osc.frequency.value = freq;
-            
-            gainNode.gain.setValueAtTime(0.2, now + times[i]);
+            gainNode.gain.setValueAtTime(0.1, now + times[i]);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + times[i] + lengths[i]);
-            
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
-            
             osc.start(now + times[i]);
             osc.stop(now + times[i] + lengths[i]);
         });
     }
 
     function playPageTurn() {
-        // Speelt nu het 'andere deuntje' (de synthesizer muziek)
-        playSynthIntro();
+        initAudio();
+        const bufferSize = audioCtx.sampleRate * 0.5;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+        filter.frequency.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        noise.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        noise.start();
     }
+
+    // --- Recording & WAV Conversion ---
 
     async function toggleRecording() {
         initAudio();
@@ -299,66 +199,81 @@
         const text = document.getElementById('recordText');
         const status = document.getElementById('statusLabel');
         const downloadArea = document.getElementById('downloadArea');
+        const processingArea = document.getElementById('processingArea');
 
         if (!isRecording) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                let mimeType = 'audio/webm';
-                if (!MediaRecorder.isTypeSupported(mimeType)) {
-                    mimeType = 'audio/mp4'; 
-                    if(!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
-                }
-
-                mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+                mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
 
-                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
 
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: mimeType || 'audio/webm' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
+                mediaRecorder.onstop = async () => {
+                    processingArea.classList.remove('hidden');
                     
-                    const link = document.getElementById('downloadLink');
-                    link.href = audioUrl;
-                    const date = new Date();
-                    link.download = `RadioDonald_${date.getDate()}-${date.getMonth()+1}_${date.getHours()}u${date.getMinutes()}.webm`;
+                    // Create basic blob
+                    const audioBlob = new Blob(audioChunks);
+                    
+                    // Convert to WAV
+                    try {
+                        const arrayBuffer = await audioBlob.arrayBuffer();
+                        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                        const wavBlob = bufferToWave(audioBuffer, audioBuffer.length);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+                        
+                        const link = document.getElementById('downloadLink');
+                        link.href = audioUrl;
+                        
+                        const date = new Date();
+                        const filename = `RadioDonald_${date.getHours()}-${String(date.getMinutes()).padStart(2, '0')}.wav`;
+                        link.download = filename;
 
-                    downloadArea.classList.remove('hidden');
+                        processingArea.classList.add('hidden');
+                        downloadArea.classList.remove('hidden');
+                    } catch (e) {
+                        console.error("Conversie fout", e);
+                        alert("Er ging iets mis met opslaan. Probeer opnieuw.");
+                        processingArea.classList.add('hidden');
+                    }
                 };
 
                 mediaRecorder.start();
                 
                 isRecording = true;
-                btn.classList.remove('bg-red-500', 'hover:bg-red-400', 'border-red-700');
-                btn.classList.add('bg-gray-800', 'hover:bg-gray-700', 'border-gray-900');
+                btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'border-red-700');
+                btn.classList.add('bg-gray-700', 'hover:bg-gray-800', 'border-gray-900');
                 icon.classList.remove('fa-circle');
-                icon.classList.add('fa-square', 'text-red-500');
-                text.innerText = "Stop!";
-                
+                icon.classList.add('fa-stop', 'text-red-500');
+                text.innerText = "Stop Opname";
                 status.innerText = "ON AIR";
-                status.classList.remove('bg-gray-200/80', 'text-gray-500');
+                status.classList.remove('bg-gray-200', 'text-gray-500');
                 status.classList.add('bg-red-600', 'text-white', 'on-air');
                 
                 downloadArea.classList.add('hidden');
+                processingArea.classList.add('hidden');
+
                 startTimer();
 
             } catch (err) {
                 console.error(err);
-                alert("Geef toestemming voor de microfoon om op te nemen! 🎙️");
+                alert("Geen toegang tot microfoon.");
             }
         } else {
             mediaRecorder.stop();
             mediaRecorder.stream.getTracks().forEach(track => track.stop());
 
             isRecording = false;
-            btn.classList.add('bg-red-500', 'hover:bg-red-400', 'border-red-700');
-            btn.classList.remove('bg-gray-800', 'hover:bg-gray-700', 'border-gray-900');
+            btn.classList.add('bg-red-500', 'hover:bg-red-600', 'border-red-700');
+            btn.classList.remove('bg-gray-700', 'hover:bg-gray-800', 'border-gray-900');
             icon.classList.add('fa-circle');
-            icon.classList.remove('fa-square', 'text-red-500');
-            text.innerText = "Opnemen";
+            icon.classList.remove('fa-stop', 'text-red-500');
+            text.innerText = "Nieuwe Opname";
 
-            status.innerText = "Klaar";
-            status.classList.add('bg-gray-200/80', 'text-gray-500');
+            status.innerText = "Stand-by";
+            status.classList.add('bg-gray-200', 'text-gray-500');
             status.classList.remove('bg-red-600', 'text-white', 'on-air');
 
             stopTimer();
@@ -374,13 +289,70 @@
             document.getElementById('timer').innerText = 
                 `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }, 1000);
-        
-        document.querySelectorAll('#visualizer div').forEach(div => div.style.animationDuration = '0.5s');
+        document.querySelectorAll('#visualizer div').forEach(div => {
+            div.style.animationDuration = '0.5s';
+        });
     }
 
     function stopTimer() {
         clearInterval(timerInterval);
-        document.querySelectorAll('#visualizer div').forEach(div => div.style.animationDuration = '0s');
+        document.querySelectorAll('#visualizer div').forEach(div => {
+            div.style.animationDuration = '0s';
+        });
+    }
+
+    // --- WAV Conversion Helper Function ---
+    function bufferToWave(abuffer, len) {
+        let numOfChan = abuffer.numberOfChannels,
+            length = len * numOfChan * 2 + 44,
+            buffer = new ArrayBuffer(length),
+            view = new DataView(buffer),
+            channels = [], i, sample,
+            offset = 0,
+            pos = 0;
+
+        // write WAVE header
+        setUint32(0x46464952);                         // "RIFF"
+        setUint32(length - 8);                         // file length - 8
+        setUint32(0x45564157);                         // "WAVE"
+
+        setUint32(0x20746d66);                         // "fmt " chunk
+        setUint32(16);                                 // length = 16
+        setUint16(1);                                  // PCM (uncompressed)
+        setUint16(numOfChan);
+        setUint32(abuffer.sampleRate);
+        setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+        setUint16(numOfChan * 2);                      // block-align
+        setUint16(16);                                 // 16-bit (hardcoded in this function)
+
+        setUint32(0x61746164);                         // "data" - chunk
+        setUint32(length - pos - 4);                   // chunk length
+
+        // write interleaved data
+        for(i = 0; i < abuffer.numberOfChannels; i++)
+            channels.push(abuffer.getChannelData(i));
+
+        while(pos < len) {
+            for(i = 0; i < numOfChan; i++) {             // interleave channels
+                sample = Math.max(-1, Math.min(1, channels[i][pos])); // clamp
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; // scale to 16-bit signed int
+                view.setInt16(44 + offset, sample, true);          // write 16-bit sample
+                offset += 2;
+            }
+            pos++;
+        }
+
+        return new Blob([buffer], {type: "audio/wav"});
+
+        function setUint16(data) {
+            view.setUint16(pos, data, true);
+            pos += 2;
+        }
+
+        function setUint32(data) {
+            view.setUint32(pos, data, true);
+            pos += 4;
+        }
     }
 </script>
 </body>
