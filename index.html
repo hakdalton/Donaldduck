@@ -133,34 +133,29 @@
     </div>
 
     <!-- Download & Preview & Reset Area -->
-    <div id="downloadArea" class="hidden animate-fade-in flex flex-col space-y-3">
+    <div id="downloadArea" class="hidden animate-fade-in flex flex-col space-y-4">
         
-        <!-- Audio Player Preview -->
-        <div class="bg-white p-3 rounded-2xl border-2 border-blue-200 shadow-sm">
-             <p class="text-xs text-blue-400 font-bold mb-1 uppercase text-center">Luister terug</p>
-             <audio id="audioPreview" controls class="w-full outline-none"></audio>
+        <!-- Stap 1: Luisteren -->
+        <div class="bg-white p-5 rounded-2xl border-4 border-blue-200 shadow-sm relative mt-2">
+             <div class="absolute -top-4 left-4 bg-blue-500 text-white text-sm font-bold px-3 py-1 rounded-full uppercase shadow-sm">Stap 1: Luisteren</div>
+             <p class="text-blue-800 font-bold mb-2 mt-1">Hoe klinkt het?</p>
+             <audio id="audioPreview" controls class="w-full outline-none h-12"></audio>
         </div>
 
-        <!-- Download Box -->
-        <div class="bg-green-100 border-2 border-green-400 rounded-2xl p-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-green-500 text-white p-2 rounded-full">
-                    <i class="fas fa-file-audio"></i>
-                </div>
-                <div>
-                    <p class="font-bold text-green-800">Klaar!</p>
-                    <p class="text-xs text-green-600">Hoge kwaliteit (.WAV)</p>
-                </div>
-            </div>
-            <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-xl shadow-md transform active:scale-95 transition flex items-center">
-                <i class="fas fa-download mr-2"></i> Opslaan
+        <!-- Stap 2: Actie Knoppen -->
+        <div class="grid grid-cols-1 gap-3 relative pt-2">
+            <div class="absolute -top-2 left-4 bg-green-500 text-white text-sm font-bold px-3 py-1 rounded-full uppercase shadow-sm z-10">Stap 2: Kiezen</div>
+            
+            <!-- Save Button -->
+            <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-5 px-6 rounded-2xl shadow-[0_6px_0_rgba(21,128,61,0.5)] active:shadow-none active:translate-y-1 transition flex items-center justify-center text-xl mt-2">
+                <i class="fas fa-thumbs-up mr-3 text-3xl"></i> Goed? Opslaan!
             </a>
-        </div>
 
-        <!-- Reset Button -->
-        <button onclick="resetApp()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-3 px-4 rounded-xl border-2 border-gray-300 transform active:scale-95 transition flex items-center justify-center">
-            <i class="fas fa-trash-alt mr-2"></i> Alles wissen en opnieuw beginnen
-        </button>
+            <!-- Reset Button -->
+            <button onclick="resetApp()" class="bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-4 px-6 rounded-2xl border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition flex items-center justify-center text-lg">
+                <i class="fas fa-trash-alt mr-2"></i> Nee, opnieuw!
+            </button>
+        </div>
     </div>
 
 </div>
