@@ -21,10 +21,14 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #f0f9ff; /* Luchtblauw */
-            background-image: radial-gradient(#bae6fd 15%, transparent 16%), radial-gradient(#bae6fd 15%, transparent 16%);
-            background-size: 60px 60px;
-            background-position: 0 0, 30px 30px;
+            background-color: #f0f9ff; /* Fallback kleur */
+            
+            /* Achtergrondafbeelding instellingen */
+            background-image: url('plaatje.png');
+            background-size: cover; /* Zorgt dat het plaatje het hele scherm vult */
+            background-position: center; /* Centreert het plaatje */
+            background-repeat: no-repeat; /* Voorkomt herhaling */
+            
             touch-action: manipulation; /* Voorkomt zoomen op iPad */
             /* Zorgt dat je niet per ongeluk naar beneden trekt om te verversen op iPad (in standalone modus) */
             overscroll-behavior-y: none; 
@@ -179,9 +183,24 @@
     }
 
     // --- Sound Effects ---
+    
+    // 1. Play Uploaded MP3
     function playIntro() {
+        // Maakt een nieuw Audio object aan met intro.mp3
+        const audio = new Audio('intro.mp3');
+        audio.play().catch(error => {
+            console.error("Fout bij afspelen:", error);
+            alert("Kan 'intro.mp3' niet vinden! Zorg dat het bestand in de map staat.");
+        });
+    }
+
+    // 2. Play Synthesized Tune (Previously the intro)
+    function playPageTurn() {
         initAudio();
         const now = audioCtx.currentTime;
+        
+        // Het vrolijke deuntje (voorheen bij Intro)
+        // Noten: C4, E4, G4, C5, G4, E4, C4
         const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63];
         const times = [0, 0.2, 0.4, 0.6, 0.9, 1.1, 1.4];
         const lengths = [0.2, 0.2, 0.2, 0.3, 0.2, 0.2, 0.4];
@@ -189,38 +208,19 @@
         notes.forEach((freq, i) => {
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-            osc.type = i === 3 ? 'square' : 'sine';
+            
+            osc.type = i === 3 ? 'square' : 'sine'; // Hoge noot springt eruit
             osc.frequency.value = freq;
+            
             gainNode.gain.setValueAtTime(0.1, now + times[i]);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + times[i] + lengths[i]);
+            
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
+            
             osc.start(now + times[i]);
             osc.stop(now + times[i] + lengths[i]);
         });
-    }
-
-    function playPageTurn() {
-        initAudio();
-        const bufferSize = audioCtx.sampleRate * 0.5;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
-        }
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = buffer;
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(800, audioCtx.currentTime);
-        filter.frequency.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-        noise.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        noise.start();
     }
 
     // --- Recording & WAV Conversion ---
