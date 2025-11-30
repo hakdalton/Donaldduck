@@ -48,6 +48,13 @@
             flex-direction: column;
             justify-content: center;
         }
+        
+        /* Simpele styling voor de audio speler */
+        audio {
+            width: 100%;
+            height: 40px;
+            border-radius: 20px;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -104,12 +111,21 @@
         </button>
     </div>
 
-    <!-- Download Area -->
+    <!-- Processing Indicator -->
     <div id="processingArea" class="hidden text-center p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-200 mb-4 animate-pulse">
         <p class="text-yellow-700 font-bold"><i class="fas fa-cog fa-spin mr-2"></i>Even geduld, audio omzetten...</p>
     </div>
 
-    <div id="downloadArea" class="hidden animate-fade-in">
+    <!-- Download & Preview & Reset Area -->
+    <div id="downloadArea" class="hidden animate-fade-in flex flex-col space-y-3">
+        
+        <!-- Audio Player Preview -->
+        <div class="bg-white p-3 rounded-2xl border-2 border-blue-200 shadow-sm">
+             <p class="text-xs text-blue-400 font-bold mb-1 uppercase text-center">Luister terug</p>
+             <audio id="audioPreview" controls class="w-full outline-none"></audio>
+        </div>
+
+        <!-- Download Box -->
         <div class="bg-green-100 border-2 border-green-400 rounded-2xl p-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div class="bg-green-500 text-white p-2 rounded-full">
@@ -121,9 +137,14 @@
                 </div>
             </div>
             <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-xl shadow-md transform active:scale-95 transition flex items-center">
-                <i class="fas fa-download mr-2"></i> Download
+                <i class="fas fa-download mr-2"></i> Opslaan
             </a>
         </div>
+
+        <!-- Reset Button -->
+        <button onclick="resetApp()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-3 px-4 rounded-xl border-2 border-gray-300 transform active:scale-95 transition flex items-center justify-center">
+            <i class="fas fa-trash-alt mr-2"></i> Alles wissen en opnieuw beginnen
+        </button>
     </div>
 
 </div>
@@ -200,9 +221,14 @@
         const status = document.getElementById('statusLabel');
         const downloadArea = document.getElementById('downloadArea');
         const processingArea = document.getElementById('processingArea');
+        const audioPreview = document.getElementById('audioPreview');
 
         if (!isRecording) {
             try {
+                // Reset preview just in case
+                audioPreview.pause();
+                audioPreview.src = "";
+
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
@@ -224,12 +250,15 @@
                         const wavBlob = bufferToWave(audioBuffer, audioBuffer.length);
                         const audioUrl = URL.createObjectURL(wavBlob);
                         
+                        // Setup Download Link
                         const link = document.getElementById('downloadLink');
                         link.href = audioUrl;
-                        
                         const date = new Date();
                         const filename = `RadioDonald_${date.getHours()}-${String(date.getMinutes()).padStart(2, '0')}.wav`;
                         link.download = filename;
+
+                        // Setup Audio Player
+                        audioPreview.src = audioUrl;
 
                         processingArea.classList.add('hidden');
                         downloadArea.classList.remove('hidden');
@@ -278,6 +307,42 @@
 
             stopTimer();
         }
+    }
+
+    function resetApp() {
+        // Reset Audio Player
+        const audioPreview = document.getElementById('audioPreview');
+        audioPreview.pause();
+        audioPreview.src = "";
+
+        // Hide download area
+        const downloadArea = document.getElementById('downloadArea');
+        downloadArea.classList.add('hidden');
+
+        // Reset timer display
+        document.getElementById('timer').innerText = "00:00";
+
+        // Clear audio chunks
+        audioChunks = [];
+        
+        // Reset recording state just in case
+        isRecording = false;
+        
+        // Reset button state (should already be correct, but to be sure)
+        const btn = document.getElementById('recordBtn');
+        const icon = document.getElementById('recordIcon');
+        const text = document.getElementById('recordText');
+        const status = document.getElementById('statusLabel');
+
+        btn.classList.add('bg-red-500', 'hover:bg-red-600', 'border-red-700');
+        btn.classList.remove('bg-gray-700', 'hover:bg-gray-800', 'border-gray-900');
+        icon.classList.add('fa-circle');
+        icon.classList.remove('fa-stop', 'text-red-500');
+        text.innerText = "Start Opname";
+
+        status.innerText = "Stand-by";
+        status.classList.add('bg-gray-200', 'text-gray-500');
+        status.classList.remove('bg-red-600', 'text-white', 'on-air');
     }
 
     function startTimer() {
