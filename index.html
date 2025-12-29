@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Zorgt ervoor dat de app mooi opent op iPad zonder browserbalken -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Radio Donald">
 
-    <!-- Icoontjes voor iPad scherm en browser tabblad (lokaal bestand: duck.png) -->
     <link rel="apple-touch-icon" href="duck.png">
     <link rel="icon" type="image/png" href="duck.png">
 
@@ -21,16 +19,12 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #f0f9ff; /* Fallback kleur */
-            
-            /* Achtergrondafbeelding instellingen */
+            background-color: #f0f9ff;
             background-image: url('plaatje.png');
-            background-size: cover; /* Zorgt dat het plaatje het hele scherm vult */
-            background-position: center; /* Centreert het plaatje */
-            background-repeat: no-repeat; /* Voorkomt herhaling */
-            
-            touch-action: manipulation; /* Voorkomt zoomen op iPad */
-            /* Zorgt dat je niet per ongeluk naar beneden trekt om te verversen op iPad (in standalone modus) */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            touch-action: manipulation;
             overscroll-behavior-y: none; 
         }
 
@@ -65,15 +59,13 @@
             justify-content: center;
         }
         
-        /* Simpele styling voor de audio speler */
         audio {
             width: 100%;
-            height: 60px; /* Groter gemaakt */
+            height: 60px;
             border-radius: 30px;
         }
-        /* Probeert de controls groter te maken op webkit browsers (iPad) */
         audio::-webkit-media-controls-panel {
-            transform: scale(1.0); /* Kan aangepast worden indien nodig, maar hoogte helpt vaak al */
+            transform: scale(1.0);
         }
     </style>
 </head>
@@ -81,7 +73,6 @@
 
 <div class="ipad-container p-4 max-w-2xl mx-auto">
     
-    <!-- Header -->
     <header class="text-center mb-6">
         <div class="inline-block bg-yellow-400 p-4 rounded-full border-4 border-white shadow-lg mb-2">
             <i class="fas fa-microphone-alt text-4xl text-orange-600"></i>
@@ -90,7 +81,6 @@
         <p class="text-blue-400 font-bold">De Podcast Maker</p>
     </header>
 
-    <!-- Status & Visualizer -->
     <div class="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-gray-200 mb-6 relative overflow-hidden">
         <div id="statusLabel" class="absolute top-4 right-4 bg-gray-200 text-gray-500 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider transition-colors duration-300">
             Stand-by
@@ -106,20 +96,23 @@
         </div>
     </div>
 
-    <!-- Controls -->
     <div class="grid grid-cols-2 gap-4 mb-6">
-        <button onclick="playIntro()" class="btn-main bg-blue-500 hover:bg-blue-600 text-white rounded-2xl p-6 flex flex-col items-center justify-center border-b-8 border-blue-700">
+        <button onclick="playAudioFile('intro.mp3')" class="btn-main bg-blue-500 hover:bg-blue-600 text-white rounded-2xl p-6 flex flex-col items-center justify-center border-b-8 border-blue-700">
             <i class="fas fa-music text-3xl mb-2"></i>
             <span class="font-bold text-lg">Intro Muziek</span>
         </button>
 
-        <button onclick="playPageTurn()" class="btn-main bg-orange-400 hover:bg-orange-500 text-white rounded-2xl p-6 flex flex-col items-center justify-center border-b-8 border-orange-600">
+        <button onclick="playAudioFile('bladzijde.mp3')" class="btn-main bg-orange-400 hover:bg-orange-500 text-white rounded-2xl p-6 flex flex-col items-center justify-center border-b-8 border-orange-600">
             <i class="fas fa-book-open text-3xl mb-2"></i>
             <span class="font-bold text-lg">Bladzijde</span>
         </button>
+        
+        <button onclick="playAudioFile('inwoner.mp3')" class="btn-main col-span-2 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 rounded-2xl p-4 flex flex-row items-center justify-center border-b-8 border-yellow-600">
+            <i class="fas fa-trophy text-3xl mr-3 text-yellow-700"></i>
+            <span class="font-bold text-xl">Inwoner v/d Week</span>
+        </button>
     </div>
 
-    <!-- Recording Control -->
     <div class="flex justify-center mb-6">
         <button id="recordBtn" onclick="toggleRecording()" class="btn-main w-full bg-red-500 hover:bg-red-600 text-white rounded-3xl p-6 flex items-center justify-center border-b-8 border-red-700 transform transition">
             <div class="flex items-center space-x-4">
@@ -131,32 +124,24 @@
         </button>
     </div>
 
-    <!-- Processing Indicator -->
     <div id="processingArea" class="hidden text-center p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-200 mb-4 animate-pulse">
         <p class="text-yellow-700 font-bold"><i class="fas fa-cog fa-spin mr-2"></i>Even geduld, audio omzetten...</p>
     </div>
 
-    <!-- Download & Preview & Reset Area -->
     <div id="downloadArea" class="hidden animate-fade-in flex flex-col space-y-6">
-        
-        <!-- Stap 1: Luisteren -->
         <div class="bg-white p-6 rounded-3xl border-4 border-blue-200 shadow-lg relative mt-4">
              <div class="absolute -top-5 left-4 bg-blue-500 text-white text-lg font-bold px-4 py-1 rounded-full uppercase shadow-md">Stap 1: Luisteren</div>
              <p class="text-blue-800 font-bold mb-3 mt-2 text-xl">Hoe klinkt het?</p>
-             <!-- Extra hoogte voor de speler -->
              <audio id="audioPreview" controls class="w-full outline-none h-16"></audio>
         </div>
 
-        <!-- Stap 2: Actie Knoppen -->
         <div class="grid grid-cols-1 gap-4 relative pt-4">
             <div class="absolute -top-2 left-4 bg-green-500 text-white text-lg font-bold px-4 py-1 rounded-full uppercase shadow-md z-10">Stap 2: Kiezen</div>
             
-            <!-- Save Button (Extra Groot) -->
             <a id="downloadLink" href="#" class="bg-green-500 hover:bg-green-600 text-white font-bold py-8 px-6 rounded-3xl shadow-[0_8px_0_rgba(21,128,61,0.5)] active:shadow-none active:translate-y-2 transition flex items-center justify-center text-3xl mt-2 border-4 border-green-400">
                 <i class="fas fa-thumbs-up mr-4 text-5xl"></i> Goed? Opslaan!
             </a>
 
-            <!-- Reset Button (Groot) -->
             <button onclick="resetApp()" class="bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-6 px-6 rounded-3xl border-b-8 border-gray-300 active:border-b-0 active:translate-y-2 transition flex items-center justify-center text-2xl">
                 <i class="fas fa-trash-alt mr-3 text-3xl"></i> Nee, opnieuw!
             </button>
@@ -173,57 +158,60 @@
     let startTime;
     let timerInterval;
 
+    // Nieuwe variabelen voor het mixen van geluid
+    let destNode; // Hier komt alles samen (Mic + Muziek) voor de opname
+    let micSource; // De microfoon input
+
     function initAudio() {
         if (!audioCtx) {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            // Maak een speciaal punt waar we audio naartoe kunnen sturen voor de opname
+            destNode = audioCtx.createMediaStreamDestination();
         }
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
     }
 
-    // --- Sound Effects ---
-    
-    // 1. Play Uploaded MP3
-    function playIntro() {
-        // Maakt een nieuw Audio object aan met intro.mp3
-        const audio = new Audio('intro.mp3');
-        audio.play().catch(error => {
-            console.error("Fout bij afspelen:", error);
-            alert("Kan 'intro.mp3' niet vinden! Zorg dat het bestand in de map staat.");
-        });
-    }
-
-    // 2. Play Synthesized Tune (Previously the intro)
-    function playPageTurn() {
+    // --- Geavanceerde Audio Speler (Met Mixing) ---
+    async function playAudioFile(filename) {
         initAudio();
-        const now = audioCtx.currentTime;
-        
-        // Het vrolijke deuntje (voorheen bij Intro)
-        // Noten: C4, E4, G4, C5, G4, E4, C4
-        const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63];
-        const times = [0, 0.2, 0.4, 0.6, 0.9, 1.1, 1.4];
-        const lengths = [0.2, 0.2, 0.2, 0.3, 0.2, 0.2, 0.4];
 
-        notes.forEach((freq, i) => {
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+        try {
+            // Stap 1: Haal het bestand op
+            const response = await fetch(filename);
+            const arrayBuffer = await response.arrayBuffer();
             
-            osc.type = i === 3 ? 'square' : 'sine'; // Hoge noot springt eruit
-            osc.frequency.value = freq;
+            // Stap 2: Decodeer het audiobestand
+            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
             
-            gainNode.gain.setValueAtTime(0.1, now + times[i]);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + times[i] + lengths[i]);
+            // Stap 3: Maak een afspeelbron
+            const source = audioCtx.createBufferSource();
+            source.buffer = audioBuffer;
             
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            // Stap 4: Verbind de kabels!
             
-            osc.start(now + times[i]);
-            osc.stop(now + times[i] + lengths[i]);
-        });
+            // Kabel 1: Naar de speakers (zodat jij het hoort)
+            source.connect(audioCtx.destination);
+            
+            // Kabel 2: Naar de opname (zodat het opgenomen wordt), ALS we aan het opnemen zijn
+            if (destNode) {
+                source.connect(destNode);
+            }
+            
+            // Start afspelen
+            source.start(0);
+
+        } catch (error) {
+            console.error("Fout bij afspelen:", error);
+            // Fallback: Als fetch mislukt (bijv. door lokale beveiliging), probeer gewone speler
+            // Let op: Dit wordt NIET opgenomen in de digitale mix!
+            alert("Kon het audiobestand niet laden voor de mix. Ik probeer het gewoon af te spelen (maar het komt misschien niet op de opname). Zorg dat de bestanden in dezelfde map staan.");
+            new Audio(filename).play();
+        }
     }
 
-    // --- Recording & WAV Conversion ---
+    // --- Recording & Mixing Logic ---
 
     async function toggleRecording() {
         initAudio();
@@ -237,12 +225,20 @@
 
         if (!isRecording) {
             try {
-                // Reset preview just in case
                 audioPreview.pause();
                 audioPreview.src = "";
 
+                // 1. Vraag om microfoon
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
+                
+                // 2. Stop de microfoon in onze AudioContext
+                micSource = audioCtx.createMediaStreamSource(stream);
+                
+                // 3. Verbind microfoon met de OPNAME (niet met speakers, anders krijg je piepende feedback!)
+                micSource.connect(destNode);
+
+                // 4. Start de recorder, maar neem op van onze MIX (destNode) in plaats van direct de microfoon
+                mediaRecorder = new MediaRecorder(destNode.stream);
                 audioChunks = [];
 
                 mediaRecorder.ondataavailable = event => {
@@ -252,24 +248,28 @@
                 mediaRecorder.onstop = async () => {
                     processingArea.classList.remove('hidden');
                     
+                    // Schakel microfoon uit in de mix om bronnen te sparen
+                    if (micSource) {
+                        micSource.disconnect();
+                    }
+                    // Stop de tracks van de originele stream (rood lampje ipad uit)
+                    stream.getTracks().forEach(track => track.stop());
+
                     // Create basic blob
                     const audioBlob = new Blob(audioChunks);
                     
-                    // Convert to WAV
                     try {
                         const arrayBuffer = await audioBlob.arrayBuffer();
                         const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
                         const wavBlob = bufferToWave(audioBuffer, audioBuffer.length);
                         const audioUrl = URL.createObjectURL(wavBlob);
                         
-                        // Setup Download Link
                         const link = document.getElementById('downloadLink');
                         link.href = audioUrl;
                         const date = new Date();
                         const filename = `RadioDonald_${date.getHours()}-${String(date.getMinutes()).padStart(2, '0')}.wav`;
                         link.download = filename;
 
-                        // Setup Audio Player
                         audioPreview.src = audioUrl;
 
                         processingArea.classList.add('hidden');
@@ -304,7 +304,7 @@
             }
         } else {
             mediaRecorder.stop();
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            // Let op: stream stoppen gebeurt nu in onstop om te zorgen dat de laatste bytes mee zijn
 
             isRecording = false;
             btn.classList.add('bg-red-500', 'hover:bg-red-600', 'border-red-700');
@@ -322,25 +322,15 @@
     }
 
     function resetApp() {
-        // Reset Audio Player
         const audioPreview = document.getElementById('audioPreview');
         audioPreview.pause();
         audioPreview.src = "";
-
-        // Hide download area
         const downloadArea = document.getElementById('downloadArea');
         downloadArea.classList.add('hidden');
-
-        // Reset timer display
         document.getElementById('timer').innerText = "00:00";
-
-        // Clear audio chunks
         audioChunks = [];
-        
-        // Reset recording state just in case
         isRecording = false;
         
-        // Reset button state (should already be correct, but to be sure)
         const btn = document.getElementById('recordBtn');
         const icon = document.getElementById('recordIcon');
         const text = document.getElementById('recordText');
@@ -378,7 +368,7 @@
         });
     }
 
-    // --- WAV Conversion Helper Function ---
+    // --- WAV Conversion Helper ---
     function bufferToWave(abuffer, len) {
         let numOfChan = abuffer.numberOfChannels,
             length = len * numOfChan * 2 + 44,
@@ -388,48 +378,27 @@
             offset = 0,
             pos = 0;
 
-        // write WAVE header
-        setUint32(0x46464952);                         // "RIFF"
-        setUint32(length - 8);                         // file length - 8
-        setUint32(0x45564157);                         // "WAVE"
+        setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157);
+        setUint32(0x20746d66); setUint32(16); setUint16(1); setUint16(numOfChan);
+        setUint32(abuffer.sampleRate); setUint32(abuffer.sampleRate * 2 * numOfChan);
+        setUint16(numOfChan * 2); setUint16(16); setUint32(0x61746164);
+        setUint32(length - pos - 4);
 
-        setUint32(0x20746d66);                         // "fmt " chunk
-        setUint32(16);                                 // length = 16
-        setUint16(1);                                  // PCM (uncompressed)
-        setUint16(numOfChan);
-        setUint32(abuffer.sampleRate);
-        setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
-        setUint16(numOfChan * 2);                      // block-align
-        setUint16(16);                                 // 16-bit (hardcoded in this function)
-
-        setUint32(0x61746164);                         // "data" - chunk
-        setUint32(length - pos - 4);                   // chunk length
-
-        // write interleaved data
-        for(i = 0; i < abuffer.numberOfChannels; i++)
-            channels.push(abuffer.getChannelData(i));
+        for(i = 0; i < abuffer.numberOfChannels; i++) channels.push(abuffer.getChannelData(i));
 
         while(pos < len) {
-            for(i = 0; i < numOfChan; i++) {             // interleave channels
-                sample = Math.max(-1, Math.min(1, channels[i][pos])); // clamp
-                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; // scale to 16-bit signed int
-                view.setInt16(44 + offset, sample, true);          // write 16-bit sample
+            for(i = 0; i < numOfChan; i++) {
+                sample = Math.max(-1, Math.min(1, channels[i][pos]));
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                view.setInt16(44 + offset, sample, true);
                 offset += 2;
             }
             pos++;
         }
-
         return new Blob([buffer], {type: "audio/wav"});
 
-        function setUint16(data) {
-            view.setUint16(pos, data, true);
-            pos += 2;
-        }
-
-        function setUint32(data) {
-            view.setUint32(pos, data, true);
-            pos += 4;
-        }
+        function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+        function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
     }
 </script>
 </body>
